@@ -40,6 +40,21 @@ func TestCreateExpenseHandler(t *testing.T) {
 	assert.Equal(t, []string([]string{"food", "beverage"}), (exp.Tags))
 }
 
+func TestSelectExpenseWithIDHandler(t *testing.T) {
+	var exp Expense
+
+	res := request(http.MethodGet, uri("expense/2"), nil)
+	err := res.Decode(&exp)
+
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusCreated, res.StatusCode)
+	assert.NotEqual(t, 0, exp.ID)
+	assert.Equal(t, "strawberry smoothie", exp.Title)
+	assert.Equal(t, 79, exp.Amount)
+	assert.Equal(t, "night market promotion discount 10 bath", exp.Note)
+	assert.Equal(t, []string([]string{"food", "beverage"}), (exp.Tags))
+}
+
 func uri(paths ...string) string {
 	host := "http://localhost:2565"
 	if paths == nil {
