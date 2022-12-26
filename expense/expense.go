@@ -62,6 +62,29 @@ func GetExpenseWithIDHandler(c echo.Context) error {
 	return c.JSON(http.StatusCreated, e)
 }
 
+func UpdateExpenseHandler(c echo.Context) error {
+	rowID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Err{Message: err.Error()})
+	}
+
+	var e Expense
+	err = c.Bind(&e)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, Err{Message: err.Error()})
+	}
+
+	row := db.QueryRow("UPDATE expenses SET title = $2, amount = $3, note = $4, tags = $5 WHERE id = $1 RETURNING id,title,amount,note,tags", rowID, e.Title, e.Amount, e.Note, pq.Array(e.Tags))
+
+	err = row.Scan(&e.ID, &e.Title, &e.Amount, &e.Note, (*pq.StringArray)(&e.Tags))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusCreated, e)
+}
+
 var db *sql.DB
 
 func InitDB() {
