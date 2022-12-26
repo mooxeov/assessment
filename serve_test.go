@@ -76,6 +76,27 @@ func TestUpdateExpenseHandler(t *testing.T) {
 	assert.Equal(t, []string([]string{"beverage"}), (exp.Tags))
 }
 
+func TestSelectExpenseHandler(t *testing.T) {
+	var exp [2]Expense
+
+	res := request(http.MethodGet, uri("expense"), nil)
+	err := res.Decode(&exp)
+
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusCreated, res.StatusCode)
+	assert.NotEqual(t, 0, exp[0].ID)
+	assert.Equal(t, "apple smoothie", exp[0].Title)
+	assert.Equal(t, 89, exp[0].Amount)
+	assert.Equal(t, "no discount", exp[0].Note)
+	assert.Equal(t, []string([]string{"beverage"}), (exp[0].Tags))
+
+	assert.NotEqual(t, 0, exp[1].ID)
+	assert.Equal(t, "iPhone 14 Pro Max 1TB", exp[1].Title)
+	assert.Equal(t, 66900, exp[1].Amount)
+	assert.Equal(t, "birthday gift from my love", exp[1].Note)
+	assert.Equal(t, []string([]string{"gadget"}), (exp[1].Tags))
+}
+
 func uri(paths ...string) string {
 	host := "http://localhost:2565"
 	if paths == nil {
