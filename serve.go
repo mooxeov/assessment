@@ -22,6 +22,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.POST("/expense", expense.CreateExpenseHandler)
+	e.GET("/expense/:id", expense.GetExpenseWithIDHandler)
 
 	go func() {
 		if err := e.Start(":2565"); err != nil && err != http.ErrServerClosed {
