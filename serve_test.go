@@ -55,6 +55,27 @@ func TestSelectExpenseWithIDHandler(t *testing.T) {
 	assert.Equal(t, []string([]string{"food", "beverage"}), (exp.Tags))
 }
 
+func TestUpdateExpenseHandler(t *testing.T) {
+	body := bytes.NewBufferString(`{
+		"title":"apple smoothie",
+		"amount":89,
+		"note":"no discount", 
+		"tags":["beverage"]
+	}`)
+	var exp Expense
+
+	res := request(http.MethodPut, uri("expense/1"), body)
+	err := res.Decode(&exp)
+
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusCreated, res.StatusCode)
+	assert.NotEqual(t, 0, exp.ID)
+	assert.Equal(t, "apple smoothie", exp.Title)
+	assert.Equal(t, 89, exp.Amount)
+	assert.Equal(t, "no discount", exp.Note)
+	assert.Equal(t, []string([]string{"beverage"}), (exp.Tags))
+}
+
 func uri(paths ...string) string {
 	host := "http://localhost:2565"
 	if paths == nil {
